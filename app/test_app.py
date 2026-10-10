@@ -102,6 +102,32 @@ def test_public_link_on_and_off(client):
     assert client.get(f"/s/{token}").status_code == 404
 
 
+def test_preview_shows_safe_types_inline(client):
+    register(client, "a@test.com")
+    upload(client, "dog.jpg")
+    response = client.get(f"/view/{only_file()['id']}")
+    assert response.data == b"fake image"
+    assert response.mimetype == "image/jpeg"
+    assert "attachment" not in response.headers.get("Content-Disposition", "")
+    assert response.headers["Content-Security-Policy"] == "sandbox"
+    assert response.headers["X-Content-Type-Options"] == "nosniff"
+
+
+def test_preview_refuses_html(client):
+    register(client, "a@test.com")
+    upload(client, "evil.html", b"<script>alert(1)</script>")
+    assert client.get(f"/view/{only_file()['id']}").status_code == 404
+
+
+def test_preview_needs_access(client):
+    register(client, "a@test.com")
+    upload(client, "dog.jpg")
+    file_id = only_file()["id"]
+    client.get("/logout")
+    register(client, "c@test.com")
+    assert client.get(f"/view/{file_id}").status_code == 403
+
+
 def test_delete(client):
     register(client, "a@test.com")
     upload(client)

@@ -94,6 +94,85 @@ document.addEventListener("click", async (event) => {
   showToast("Link copied");
 });
 
+// File preview, like Google Drive: click a file name to view it, arrows move between files.
+const viewer = document.getElementById("viewer");
+if (viewer) {
+  const rows = [...document.querySelectorAll("tr[data-file]")];
+  const stage = viewer.querySelector(".viewer-stage");
+  const tagBar = viewer.querySelector(".viewer-tags");
+  const TEXT_LIMIT = 200000;
+  let current = 0;
+
+  const make = (tag, props) => Object.assign(document.createElement(tag), props);
+  const typeIcon = (row) => row.querySelector(".type-icon").cloneNode(true);
+
+  const noPreview = (row, message) => {
+    const card = document.getElementById("no-preview").content.firstElementChild.cloneNode(true);
+    card.querySelector(".no-preview-icon").append(typeIcon(row));
+    if (message) card.querySelector("p").textContent = message;
+    card.querySelector("a").href = row.dataset.download;
+    return card;
+  };
+
+  const show = (index) => {
+    current = (index + rows.length) % rows.length;
+    const row = rows[current];
+    const { name, kind, view, download } = row.dataset;
+    const stillShowing = () => rows[current] === row && viewer.open;
+
+    viewer.querySelector(".viewer-name").textContent = name;
+    viewer.querySelector(".viewer-icon").replaceChildren(typeIcon(row));
+    viewer.querySelector(".viewer-download").href = download;
+    const tags = JSON.parse(row.dataset.tags || "[]");
+    tagBar.hidden = tags.length === 0;
+    tagBar.querySelector(".tags").replaceChildren(...tags.map((t) => make("span", { className: "tag", textContent: t })));
+
+    if (kind === "image") {
+      const img = make("img", { src: view, alt: name });
+      img.onerror = () => stillShowing() && stage.replaceChildren(noPreview(row, "This image couldn’t be shown. Download it instead."));
+      stage.replaceChildren(img);
+    } else if (kind === "pdf") {
+      stage.replaceChildren(make("iframe", { src: view, title: name }));
+    } else if (kind === "text") {
+      const pre = make("pre", { textContent: "Loading…" });
+      stage.replaceChildren(pre);
+      fetch(view)
+        .then((response) => (response.ok ? response.text() : Promise.reject(response.status)))
+        .then((text) => {
+          if (!stillShowing()) return;
+          pre.textContent = text.length > TEXT_LIMIT
+            ? `${text.slice(0, TEXT_LIMIT)}\n\n… Download the file to see the rest.`
+            : text || "(This file is empty.)";
+        })
+        .catch(() => stillShowing() && stage.replaceChildren(noPreview(row, "This file couldn’t be loaded. Download it instead.")));
+    } else {
+      stage.replaceChildren(noPreview(row));
+    }
+  };
+
+  viewer.querySelectorAll(".viewer-nav").forEach((button) => {
+    button.hidden = rows.length < 2;
+    button.addEventListener("click", () => show(current + Number(button.dataset.step)));
+  });
+  viewer.querySelector("[data-close]").addEventListener("click", () => viewer.close());
+  viewer.addEventListener("close", () => stage.replaceChildren());
+  stage.addEventListener("click", (event) => { if (event.target === stage) viewer.close(); });
+  viewer.addEventListener("keydown", (event) => {
+    if (rows.length < 2) return;
+    if (event.key === "ArrowLeft") show(current - 1);
+    if (event.key === "ArrowRight") show(current + 1);
+  });
+
+  // Plain click opens the preview; Ctrl/Cmd/Shift-click keeps the normal download link.
+  document.addEventListener("click", (event) => {
+    const link = event.target.closest(".file-link");
+    if (!link || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    viewer.showModal();
+    show(rows.indexOf(link.closest("tr")));
+  });
+}
+
 // After sharing, the server sends us back to #share-<id>: reopen that share panel.
 const openPanel = location.hash.startsWith("#share-") && document.getElementById(location.hash.slice(1));
 if (openPanel && openPanel.showPopover) {

@@ -32,6 +32,15 @@ BUCKET = os.environ.get("S3_BUCKET", "")
 USERS = "db/users.json"
 FILES = "db/files.json"
 
+# Files the browser may show inline. The type comes from the extension, never from the upload,
+# so an uploaded .html or .svg can't be previewed (and so can't run scripts on our site).
+PREVIEW_TYPES = {
+    ".jpg": ("image", "image/jpeg"), ".jpeg": ("image", "image/jpeg"), ".png": ("image", "image/png"),
+    ".gif": ("image", "image/gif"), ".webp": ("image", "image/webp"),
+    ".pdf": ("pdf", "application/pdf"),
+    ".txt": ("text", "text/plain"), ".md": ("text", "text/plain"), ".csv": ("text", "text/plain"),
+}
+
 s3 = boto3.client("s3", region_name=os.environ.get("AWS_REGION", "us-east-1"))
 lock = threading.Lock()  # only one request at a time may change the JSON files
 
@@ -80,9 +89,29 @@ def owned(files, file_id):
     return record
 
 
+def readable(file_id):
+    """Return the file record if the logged-in user owns it or it was shared with them."""
+    record = load_json(FILES).get(file_id)
+    if not record:
+        abort(404)
+    if session["email"] != record["owner"] and session["email"] not in record["shared_with"]:
+        abort(403)
+    return record
+
+
 def send_record(record):
     return send_file(io.BytesIO(get_file(record["key"])), mimetype=record["type"],
                      as_attachment=True, download_name=record["name"])
+
+
+def preview_type(name):
+    """Return (kind, mimetype) if the file can be previewed, otherwise (None, None)."""
+    return PREVIEW_TYPES.get(os.path.splitext(name.lower())[1], (None, None))
+
+
+@app.template_filter("preview_kind")
+def preview_kind(record):
+    return preview_type(record["name"])[0] or "none"
 
 
 @app.template_filter("filesize")
@@ -202,12 +231,23 @@ def upload():
 @app.get("/download/<file_id>")
 @login_required
 def download(file_id):
-    record = load_json(FILES).get(file_id)
-    if not record:
+    return send_record(readable(file_id))
+
+
+@app.get("/view/<file_id>")
+@login_required
+def view(file_id):
+    """Serve a file inline for the preview viewer (safe types only)."""
+    record = readable(file_id)
+    kind, mimetype = preview_type(record["name"])
+    if not kind:
         abort(404)
-    if session["email"] != record["owner"] and session["email"] not in record["shared_with"]:
-        abort(403)
-    return send_record(record)
+    response = send_file(io.BytesIO(get_file(record["key"])), mimetype=mimetype, download_name=record["name"])
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["Cache-Control"] = "private, max-age=300"
+    if kind != "pdf":  # Chrome won't show PDFs in a sandbox; PDFs run in the browser's own viewer
+        response.headers["Content-Security-Policy"] = "sandbox"
+    return response
 
 
 @app.post("/delete/<file_id>")

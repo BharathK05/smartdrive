@@ -110,12 +110,13 @@
       </thead>
       <tbody>
         {% for f in files %}
-        <tr>
+        <tr data-file data-name="{{ f.name }}" data-kind="{{ f|preview_kind }}" data-tags='{{ f.tags|tojson }}'
+            data-view="{{ url_for('view', file_id=f.id) }}" data-download="{{ url_for('download', file_id=f.id) }}">
           <td class="td-name">
             <div class="name-cell">
               {{ type_icon(f) }}
               <div class="name-text">
-                <a href="{{ url_for('download', file_id=f.id) }}" title="Download {{ f.name }}">{{ f.name }}</a>
+                <a class="file-link" href="{{ url_for('download', file_id=f.id) }}" title="Open {{ f.name }}">{{ f.name }}</a>
                 <span class="meta-mobile">{{ f.size|filesize }} · {{ f.owner if shared_view else f.uploaded|nicedate }}</span>
               </div>
               {% if not shared_view and f.public_token %}
@@ -183,6 +184,31 @@
 </div>
 
 <form id="upload-form" action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data"></form>
+
+<dialog class="viewer" id="viewer" aria-labelledby="viewer-name">
+  <header class="viewer-bar">
+    <button class="icon-btn" type="button" data-close aria-label="Close preview" title="Close (Esc)" autofocus>{{ icon("close") }}</button>
+    <span class="viewer-icon"></span>
+    <h2 class="viewer-name" id="viewer-name"></h2>
+    <a class="btn viewer-download" href="#" download aria-label="Download">{{ icon("download") }}<span>Download</span></a>
+  </header>
+  <div class="viewer-stage"></div>
+  <button class="viewer-nav prev" type="button" data-step="-1" aria-label="Previous file" title="Previous (←)">{{ icon("chevron_left") }}</button>
+  <button class="viewer-nav next" type="button" data-step="1" aria-label="Next file" title="Next (→)">{{ icon("chevron_right") }}</button>
+  <div class="viewer-tags" hidden>
+    <span class="viewer-tags-label">{{ icon("auto_awesome") }}AI tags</span>
+    <span class="tags"></span>
+  </div>
+</dialog>
+
+<template id="no-preview">
+  <div class="no-preview">
+    <span class="no-preview-icon"></span>
+    <h3>No preview available</h3>
+    <p>This type of file can’t be shown here. Download it to open it on your computer.</p>
+    <a class="btn primary" download>{{ icon("download") }}Download</a>
+  </div>
+</template>
 
 <div class="drop-overlay" id="drop-overlay" hidden>
   <div class="drop-msg">{{ icon("upload_file") }}Drop to upload to My files</div>
