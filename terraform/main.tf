@@ -181,12 +181,14 @@ resource "aws_instance" "web" {
   iam_instance_profile   = aws_iam_instance_profile.web.name
   key_name               = aws_key_pair.deploy.key_name
 
-  # Runs once at first boot: install Python and register the app as a service.
+  # Runs once at first boot: install Python and Nginx, and register the app as a service.
+  # Nginx (port 80) forwards requests to Gunicorn (127.0.0.1:8000), which runs the Flask app.
   # Jenkins copies the app code in afterwards.
-  user_data = <<-EOF
+  user_data_replace_on_change = true # this script only runs at first boot, so changing it rebuilds the server
+  user_data                   = <<-EOF
     #!/bin/bash
     set -e
-    dnf install -y python3.11 python3.11-pip
+    dnf install -y python3.11 python3.11-pip nginx
     mkdir -p /opt/smartdrive
     chown ec2-user:ec2-user /opt/smartdrive
 
@@ -206,14 +208,55 @@ resource "aws_instance" "web" {
     User=ec2-user
     WorkingDirectory=/opt/smartdrive
     EnvironmentFile=/etc/smartdrive.env
-    ExecStart=/opt/smartdrive/venv/bin/gunicorn --workers 1 --threads 4 --bind 0.0.0.0:80 app:app
-    AmbientCapabilities=CAP_NET_BIND_SERVICE
+    ExecStart=/opt/smartdrive/venv/bin/gunicorn --workers 1 --threads 4 --bind 127.0.0.1:8000 app:app
     Restart=always
 
     [Install]
     WantedBy=multi-user.target
     UNIT
     systemctl daemon-reload
+
+    # Nginx: the public web server. Serves CSS/JS itself and passes everything else to Gunicorn.
+    cat > /etc/nginx/nginx.conf <<'NGINX'
+    user nginx;
+    worker_processes auto;
+    error_log /var/log/nginx/error.log notice;
+    pid /run/nginx.pid;
+
+    events {
+        worker_connections 1024;
+    }
+
+    http {
+        include /etc/nginx/mime.types;
+        default_type application/octet-stream;
+        types_hash_max_size 4096;
+        access_log /var/log/nginx/access.log;
+        sendfile on;
+        server_tokens off;
+        client_max_body_size 11m; # the app allows uploads up to 10 MB
+
+        server {
+            listen 80 default_server;
+            server_name _;
+
+            location /static/ {
+                alias /opt/smartdrive/static/;
+                add_header Cache-Control "no-cache"; # browsers re-check after each deploy
+            }
+
+            location / {
+                proxy_pass http://127.0.0.1:8000;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_read_timeout 60s; # AI tagging can take a few seconds
+            }
+        }
+    }
+    NGINX
+    systemctl enable --now nginx
   EOF
 
   lifecycle {

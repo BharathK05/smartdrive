@@ -28,7 +28,7 @@ A drive whose files tag themselves. Search matches what is in a photo or documen
   7. Push a change to git and watch Jenkins redeploy it.
 
 ## Capabilities and Constraints
-- Flask + Jinja templates served by Gunicorn on one EC2 t3.micro. No frontend build step; only plain static CSS and JS.
+- Flask + Jinja templates served by Gunicorn behind Nginx on one EC2 t3.micro. No frontend build step; only plain static CSS and JS.
 - **Storage:**
   - S3 is the only storage: the files themselves plus `db/users.json` and `db/files.json`.
   - Uploads are limited to 10 MB.

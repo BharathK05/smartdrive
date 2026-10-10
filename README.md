@@ -21,7 +21,7 @@ flowchart LR
   subgraph aws[AWS us-east-1]
     subgraph vpc[VPC 10.0.0.0/16]
       subgraph pub[Public subnet 10.0.1.0/24]
-        ec2[EC2 t3.micro<br/>Flask + Gunicorn]
+        ec2[EC2 t3.micro<br/>Nginx → Gunicorn → Flask]
       end
       ep[S3 Gateway Endpoint]
     end
@@ -38,7 +38,7 @@ flowchart LR
 | **Git / GitHub** | Holds everything (app code, infrastructure, pipeline). A push to `main` is what triggers a deployment. |
 | **Jenkins** | Runs the CI/CD pipeline on every push: **Test → Terraform → Deploy → Health check**. |
 | **Terraform** | Creates all the AWS infrastructure from one file, [terraform/main.tf](terraform/main.tf). |
-| **AWS** | **VPC** (network), **EC2** (web server), **S3** (all storage), **IAM** (permissions), **Rekognition + Comprehend** (AI). |
+| **AWS** | **VPC** (network), **EC2** (web server: Nginx in front of Gunicorn running the Flask app), **S3** (all storage), **IAM** (permissions), **Rekognition + Comprehend** (AI). |
 
 **Where data lives:** everything is in one private S3 bucket. Files are stored under `files/<owner>/…`. User accounts (with hashed passwords) are in `db/users.json`. File records (owner, AI tags, who it's shared with, public link) are in `db/files.json`. The bucket blocks all public access. Only the web server's IAM role can read it, through the S3 VPC endpoint, so file traffic never crosses the public internet.
 
@@ -163,12 +163,14 @@ The tests replace S3 and the AI with in-memory fakes, so they need no AWS accoun
 | `Could not find credentials entry with ID…` | The credential IDs must be exactly `aws-access-key-id` and `aws-secret-access-key`. |
 | Deploy stage stuck on "Waiting for SSH..." | Some college/office Wi-Fi blocks port 22. Try a phone hotspot. |
 | Files upload but get no AI tags | Rekognition/Comprehend may not be enabled on your account. Uploads still work; check the server log with `journalctl -u smartdrive`. |
+| Site shows "502 Bad Gateway" | Nginx is up but the app isn't. This is normal for a minute while a new server is set up. Otherwise, check `journalctl -u smartdrive` on the server. |
 | Jenkins workspace was deleted | Terraform state lived there, so delete the old resources in the AWS console (all are tagged `Project = smartdrive`), then build again. |
 
 ## Design choices and limits (good viva questions)
 
 - **JSON files in S3 instead of a database.** This keeps it simple and free. It works because there is one server, and a lock means only one request writes at a time. A real product would use DynamoDB or RDS.
 - **No private subnet.** S3 is a regional service and doesn't live inside a subnet. The private path to storage is the **S3 VPC Gateway Endpoint** plus a bucket that blocks all public access.
-- **HTTP, not HTTPS.** HTTPS needs a domain and a certificate. In production you'd put CloudFront or a load balancer with an ACM certificate in front.
+- **Nginx in front of Gunicorn.** Nginx is the public web server on port 80. It serves the CSS and JS files itself, rejects uploads over 11 MB before they reach the app, and forwards everything else to Gunicorn. Gunicorn listens only on `127.0.0.1:8000`, so the Python app can't be reached directly from the internet.
+- **HTTP, not HTTPS.** HTTPS needs a domain and a certificate. In production you'd add a certificate to Nginx (for example with Let's Encrypt), or put CloudFront or a load balancer with an ACM certificate in front.
 - **Terraform state lives in the Jenkins workspace.** In production you'd store it in an S3 backend so the whole team can share it.
 - **SSH is open only to Jenkins' own IP.** The pipeline detects your laptop's public IP on every run and updates the security group.
