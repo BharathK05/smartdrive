@@ -87,12 +87,19 @@ def send_record(record):
 
 @app.template_filter("filesize")
 def filesize(n):
-    return f"{n / 1024:.1f} KB" if n < 1024 * 1024 else f"{n / 1024 / 1024:.1f} MB"
+    if n < 1024:
+        return f"{n} B"
+    return f"{n / 1024:.0f} KB" if n < 1024 * 1024 else f"{n / 1024 / 1024:.1f} MB"
+
+
+@app.template_filter("nicedate")
+def nicedate(iso):
+    return datetime.fromisoformat(iso).strftime("%d %b %Y").lstrip("0")
 
 
 @app.errorhandler(413)
 def too_large(_error):
-    flash("That file is too big (max 10 MB).")
+    flash("That file is too big. The limit is 10 MB.", "error")
     return redirect(url_for("index"))
 
 
@@ -109,13 +116,13 @@ def register():
         email = request.form.get("email", "").strip().lower()
         password = request.form.get("password", "")
         if not email or len(password) < 6:
-            flash("Enter an email and a password of at least 6 characters.")
-            return render_template("register.html")
+            flash("Enter an email and a password of at least 6 characters.", "error")
+            return render_template("register.html", email=email)
         with lock:
             users = load_json(USERS)
             if email in users:
-                flash("That email is already registered.")
-                return render_template("register.html")
+                flash("That email already has an account. Sign in instead.", "error")
+                return render_template("register.html", email=email)
             users[email] = {"password": generate_password_hash(password)}
             save_json(USERS, users)
         session["email"] = email
@@ -131,7 +138,8 @@ def login():
         if user and check_password_hash(user["password"], request.form.get("password", "")):
             session["email"] = email
             return redirect(url_for("index"))
-        flash("Wrong email or password.")
+        flash("Wrong email or password. Try again.", "error")
+        return render_template("login.html", email=email)
     return render_template("login.html")
 
 
@@ -147,13 +155,14 @@ def logout():
 @login_required
 def index():
     me = session["email"]
+    view = "shared" if request.args.get("view") == "shared" else "mine"
     q = request.args.get("q", "").strip().lower()
-    files = sorted(load_json(FILES).values(), key=lambda f: f["uploaded"], reverse=True)
+    everything = sorted(load_json(FILES).values(), key=lambda f: f["uploaded"], reverse=True)
+    mine = [f for f in everything if f["owner"] == me]
+    files = mine if view == "mine" else [f for f in everything if me in f["shared_with"]]
     if q:
         files = [f for f in files if q in f["name"].lower() or any(q in t.lower() for t in f["tags"])]
-    mine = [f for f in files if f["owner"] == me]
-    shared = [f for f in files if me in f["shared_with"]]
-    return render_template("index.html", mine=mine, shared=shared, q=q)
+    return render_template("index.html", files=files, view=view, q=q, used=sum(f["size"] for f in mine))
 
 
 @app.post("/upload")
@@ -161,7 +170,7 @@ def index():
 def upload():
     incoming = request.files.get("file")
     if not incoming or not incoming.filename:
-        flash("Choose a file first.")
+        flash("Choose a file to upload first.", "error")
         return redirect(url_for("index"))
 
     data = incoming.read()
@@ -220,17 +229,21 @@ def delete(file_id):
 @login_required
 def share(file_id):
     email = request.form.get("email", "").strip().lower()
+    back_to_panel = redirect(url_for("index", _anchor=f"share-{file_id}"))
     with lock:
         if email not in load_json(USERS):
-            flash(f"There is no SmartDrive user called {email}.")
-            return redirect(url_for("index"))
+            flash(f"There is no SmartDrive user called {email}. Ask them to create an account first.", "error")
+            return back_to_panel
         files = load_json(FILES)
         record = owned(files, file_id)
-        if email != record["owner"] and email not in record["shared_with"]:
+        if email == record["owner"]:
+            flash("You already own this file.", "error")
+            return back_to_panel
+        if email not in record["shared_with"]:
             record["shared_with"].append(email)
             save_json(FILES, files)
     flash(f"Shared {record['name']} with {email}.")
-    return redirect(url_for("index"))
+    return back_to_panel
 
 
 @app.post("/link/<file_id>")
@@ -241,7 +254,8 @@ def toggle_link(file_id):
         record = owned(files, file_id)
         record["public_token"] = None if record["public_token"] else secrets.token_urlsafe(16)
         save_json(FILES, files)
-    return redirect(url_for("index"))
+    flash("Anyone with the link can now download this file." if record["public_token"] else "Link turned off.")
+    return redirect(url_for("index", _anchor=f"share-{file_id}"))
 
 
 @app.get("/s/<token>")

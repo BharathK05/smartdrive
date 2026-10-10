@@ -1,0 +1,26 @@
+{# Small shared pieces: icons, the logo, and file-type icons. #}
+
+{% macro icon(name, filled=false) -%}
+<span class="icon{{ ' filled' if filled }}" aria-hidden="true">{{ name }}</span>
+{%- endmacro %}
+
+{% macro brand() -%}
+<a class="brand" href="{{ url_for('index') }}">
+  <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+    <rect width="32" height="32" rx="9"/>
+    <g fill="#fff"><circle cx="9.5" cy="19" r="4"/><circle cx="15" cy="14.5" r="6.5"/><circle cx="21.5" cy="18" r="5"/><rect x="9.5" y="19" width="12" height="4"/></g>
+  </svg>
+  <span>SmartDrive</span>
+</a>
+{%- endmacro %}
+
+{% macro type_icon(f) -%}
+{%- set name = f.name|lower -%}
+{%- if f.type.startswith("image/") -%}{%- set kind, glyph = "image", "image" -%}
+{%- elif name.endswith(".pdf") -%}{%- set kind, glyph = "pdf", "picture_as_pdf" -%}
+{%- elif name.endswith((".txt", ".md", ".csv")) -%}{%- set kind, glyph = "text", "article" -%}
+{%- elif name.endswith((".doc", ".docx")) -%}{%- set kind, glyph = "text", "description" -%}
+{%- else -%}{%- set kind, glyph = "other", "draft" -%}
+{%- endif -%}
+<span class="type-icon {{ kind }}">{{ icon(glyph, filled=true) }}</span>
+{%- endmacro %}

@@ -1,0 +1,537 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-10T12:12:41+00:00",
+  "title": "Design System: SmartDrive",
+  "extensions": {
+    "colorMeta": {
+      "accent-blue": {
+        "role": "primary",
+        "displayName": "Drive Blue",
+        "canonical": "oklch(51.5% 0.189 260.5)",
+        "tonalRamp": [
+          "#010923",
+          "#09224e",
+          "#1a3f7e",
+          "#2c5db2",
+          "#4d80d8",
+          "#7aa5ee",
+          "#a9caff",
+          "#d9f0ff"
+        ]
+      },
+      "accent-blue-deep": {
+        "role": "primary",
+        "displayName": "Pressed Drive Blue",
+        "canonical": "oklch(45.4% 0.167 260.7)",
+        "tonalRamp": [
+          "#010923",
+          "#09224e",
+          "#1a3f7f",
+          "#2d5db2",
+          "#4d80d8",
+          "#7ba5ee",
+          "#a9caff",
+          "#d9f0ff"
+        ]
+      },
+      "accent-blue-soft": {
+        "role": "primary",
+        "displayName": "Selected Pill Blue",
+        "canonical": "oklch(91.9% 0.033 261.0)",
+        "tonalRamp": [
+          "#080b10",
+          "#20252e",
+          "#3b424f",
+          "#586273",
+          "#788395",
+          "#9da6b5",
+          "#c3cad5",
+          "#eaeff7"
+        ]
+      },
+      "accent-blue-wash": {
+        "role": "primary",
+        "displayName": "Blue Wash",
+        "canonical": "oklch(96.6% 0.015 260.7)",
+        "tonalRamp": [
+          "#0a0b0d",
+          "#232529",
+          "#3f4248",
+          "#5d6169",
+          "#7e838b",
+          "#a1a5ac",
+          "#c6c9ce",
+          "#eceef2"
+        ]
+      },
+      "accent-blue-ink": {
+        "role": "primary",
+        "displayName": "Deep Navy Ink",
+        "canonical": "oklch(36.9% 0.135 260.4)",
+        "tonalRamp": [
+          "#020a1f",
+          "#0e2448",
+          "#214075",
+          "#365fa6",
+          "#5682cb",
+          "#81a6e3",
+          "#aecafa",
+          "#dcf0ff"
+        ]
+      },
+      "shell": {
+        "role": "neutral",
+        "displayName": "Cool Shell",
+        "canonical": "oklch(97.2% 0.007 260.7)",
+        "tonalRamp": [
+          "#0a0b0c",
+          "#242527",
+          "#404245",
+          "#5f6165",
+          "#808286",
+          "#a3a5a8",
+          "#c8c9cc",
+          "#edeef0"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Sheet White",
+        "canonical": "oklch(100.0% 0.000 89.9)",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      },
+      "hover": {
+        "role": "neutral",
+        "displayName": "Row Hover",
+        "canonical": "oklch(95.7% 0.009 258.3)",
+        "tonalRamp": [
+          "#0a0b0d",
+          "#242527",
+          "#404246",
+          "#5e6166",
+          "#7f8387",
+          "#a2a5a9",
+          "#c7c9cc",
+          "#edeef1"
+        ]
+      },
+      "pressed": {
+        "role": "neutral",
+        "displayName": "Pressed Grey",
+        "canonical": "oklch(92.9% 0.016 257.2)",
+        "tonalRamp": [
+          "#0a0b0e",
+          "#222529",
+          "#3e4248",
+          "#5c6269",
+          "#7d838b",
+          "#a1a5ac",
+          "#c6c9cf",
+          "#eceff2"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "oklch(92.3% 0.011 256.7)",
+        "tonalRamp": [
+          "#0a0b0d",
+          "#232528",
+          "#3f4246",
+          "#5e6267",
+          "#7f8388",
+          "#a2a5aa",
+          "#c7c9cd",
+          "#edeff1"
+        ]
+      },
+      "field-stroke": {
+        "role": "neutral",
+        "displayName": "Field Stroke",
+        "canonical": "oklch(66.6% 0.021 255.6)",
+        "tonalRamp": [
+          "#090b0e",
+          "#21252b",
+          "#3d424a",
+          "#5a626c",
+          "#7b838e",
+          "#9fa6af",
+          "#c4cad0",
+          "#ebeff3"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "oklch(25.4% 0.018 255.7)",
+        "tonalRamp": [
+          "#090b0e",
+          "#22252a",
+          "#3e4249",
+          "#5b626a",
+          "#7c838c",
+          "#a0a6ad",
+          "#c5c9cf",
+          "#eceff3"
+        ]
+      },
+      "ink-secondary": {
+        "role": "neutral",
+        "displayName": "Secondary Ink",
+        "canonical": "oklch(46.0% 0.023 253.1)",
+        "tonalRamp": [
+          "#090b0f",
+          "#21262b",
+          "#3c434b",
+          "#59626d",
+          "#7a838f",
+          "#9ea6b0",
+          "#c4cad1",
+          "#ebeff4"
+        ]
+      },
+      "ink-tertiary": {
+        "role": "neutral",
+        "displayName": "Tertiary Ink",
+        "canonical": "oklch(55.6% 0.022 255.6)",
+        "tonalRamp": [
+          "#090b0e",
+          "#21252b",
+          "#3d434a",
+          "#5a626d",
+          "#7b838e",
+          "#9fa6af",
+          "#c4cad1",
+          "#ebeff4"
+        ]
+      },
+      "tag": {
+        "role": "neutral",
+        "displayName": "Tag Grey",
+        "canonical": "oklch(94.8% 0.012 259.8)",
+        "tonalRamp": [
+          "#0a0b0d",
+          "#232528",
+          "#3f4247",
+          "#5e6168",
+          "#7e8389",
+          "#a2a5ab",
+          "#c7c9cd",
+          "#edeef1"
+        ]
+      },
+      "tag-ink": {
+        "role": "neutral",
+        "displayName": "Tag Ink",
+        "canonical": "oklch(37.5% 0.039 257.3)",
+        "tonalRamp": [
+          "#080b11",
+          "#1f262f",
+          "#394351",
+          "#556276",
+          "#758398",
+          "#9aa6b7",
+          "#c1cad7",
+          "#e9eff8"
+        ]
+      },
+      "danger": {
+        "role": "semantic",
+        "displayName": "Error Red",
+        "canonical": "oklch(50.0% 0.182 29.5)",
+        "tonalRamp": [
+          "#1e0100",
+          "#460e08",
+          "#732219",
+          "#a4372b",
+          "#cb5b4c",
+          "#e5887a",
+          "#fdb4a8",
+          "#ffe1d8"
+        ]
+      },
+      "danger-soft": {
+        "role": "semantic",
+        "displayName": "Error Blush",
+        "canonical": "oklch(95.6% 0.019 25.6)",
+        "tonalRamp": [
+          "#0e0a0a",
+          "#2a2322",
+          "#493f3e",
+          "#6b5e5c",
+          "#8c7f7d",
+          "#ada2a1",
+          "#d0c7c6",
+          "#f3edec"
+        ]
+      },
+      "public-green": {
+        "role": "semantic",
+        "displayName": "Public Green",
+        "canonical": "oklch(46.8% 0.119 150.2)",
+        "tonalRamp": [
+          "#001003",
+          "#062d13",
+          "#174e28",
+          "#2a723f",
+          "#4e945f",
+          "#7db589",
+          "#acd6b4",
+          "#dbf7e0"
+        ]
+      },
+      "public-green-soft": {
+        "role": "semantic",
+        "displayName": "Public Mint",
+        "canonical": "oklch(94.3% 0.032 155.4)",
+        "tonalRamp": [
+          "#070d09",
+          "#1e2821",
+          "#38463d",
+          "#54665a",
+          "#75887b",
+          "#9aaa9f",
+          "#c1cdc4",
+          "#e9f1eb"
+        ]
+      },
+      "snackbar": {
+        "role": "semantic",
+        "displayName": "Snackbar Charcoal",
+        "canonical": "oklch(30.7% 0.013 253.0)",
+        "tonalRamp": [
+          "#0a0b0d",
+          "#232528",
+          "#3f4247",
+          "#5d6268",
+          "#7d8389",
+          "#a1a5ab",
+          "#c6c9ce",
+          "#eceff2"
+        ]
+      },
+      "type-image": {
+        "role": "semantic",
+        "displayName": "Photo Orange-Red",
+        "canonical": "oklch(59.3% 0.186 32.2)",
+        "tonalRamp": [
+          "#1e0100",
+          "#460e05",
+          "#732214",
+          "#a33825",
+          "#ca5c47",
+          "#e48976",
+          "#fcb5a6",
+          "#ffe1d7"
+        ]
+      },
+      "type-pdf": {
+        "role": "semantic",
+        "displayName": "PDF Red",
+        "canonical": "oklch(53.9% 0.194 26.7)",
+        "tonalRamp": [
+          "#1e0101",
+          "#460d0c",
+          "#73211d",
+          "#a43631",
+          "#cb5a51",
+          "#e5877e",
+          "#fdb4ab",
+          "#ffe1da"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Auth card heading."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "View title in the content sheet."
+      },
+      "subtitle": {
+        "displayName": "Subtitle",
+        "purpose": "Share sheet and empty-state headings."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Default text; file names at weight 500."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Table headers, field labels, metadata."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Tag chips and hints."
+      }
+    },
+    "shadows": [
+      {
+        "name": "resting-lift",
+        "value": "0 1px 2px rgb(24 39 75 / .12), 0 1px 3px 1px rgb(24 39 75 / .07)",
+        "purpose": "New button, auth card, focused search, hovered primary button."
+      },
+      {
+        "name": "raised-lift",
+        "value": "0 2px 6px 2px rgb(24 39 75 / .1), 0 1px 2px rgb(24 39 75 / .14)",
+        "purpose": "Hovered New button, mobile New button, snackbars."
+      },
+      {
+        "name": "floating",
+        "value": "0 12px 32px rgb(24 39 75 / .18), 0 2px 6px rgb(24 39 75 / .1)",
+        "purpose": "Share sheet, upload panel, drop message."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(.2, .7, .2, 1)",
+        "purpose": "All state transitions; 120-200ms."
+      },
+      {
+        "name": "sheet-open",
+        "value": "opacity + translateY(8px) scale(.98), 180ms",
+        "purpose": "Share sheet entrance and exit."
+      },
+      {
+        "name": "upload-bar",
+        "value": "indeterminate slide, 1.1s loop",
+        "purpose": "Upload in progress."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "no-date-column",
+        "value": "1180px"
+      },
+      {
+        "name": "narrow-sidebar",
+        "value": "1000px"
+      },
+      {
+        "name": "mobile",
+        "value": "860px"
+      },
+      {
+        "name": "small-auth",
+        "value": "480px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one main action in a form or sheet (Sign in, Share, Done).",
+      "html": "<button class=\"ds-btn-primary\">Share</button>",
+      "css": ".ds-btn-primary { height: 40px; padding: 0 20px; border: 1px solid var(--accent, #1b5fd1); border-radius: 999px; background: var(--accent, #1b5fd1); color: #fff; font: 500 14px/1 Inter, system-ui, sans-serif; cursor: pointer; transition: background .15s, box-shadow .15s; } .ds-btn-primary:hover { background: var(--accent-hover, #164fb1); border-color: var(--accent-hover, #164fb1); box-shadow: 0 1px 2px rgb(24 39 75 / .12), 0 1px 3px 1px rgb(24 39 75 / .07); } .ds-btn-primary:focus-visible { outline: 2px solid var(--accent, #1b5fd1); outline-offset: 2px; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary actions that still need a visible edge (Copy link, Clear search).",
+      "html": "<button class=\"ds-btn-outline\">Copy link</button>",
+      "css": ".ds-btn-outline { height: 40px; padding: 0 20px; border: 1px solid var(--field, #8c95a1); border-radius: 999px; background: #fff; color: var(--accent, #1b5fd1); font: 500 14px/1 Inter, system-ui, sans-serif; cursor: pointer; transition: background .15s; } .ds-btn-outline:hover { background: var(--accent-wash, #eef4fe); } .ds-btn-outline:active { background: var(--accent-soft, #d8e5fb); } .ds-btn-outline:focus-visible { outline: 2px solid var(--accent, #1b5fd1); outline-offset: 2px; }"
+    },
+    {
+      "name": "New Button",
+      "kind": "button",
+      "refersTo": "button-new",
+      "description": "The primary upload entry point, top left of the sidebar.",
+      "html": "<button class=\"ds-new\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" aria-hidden=\"true\"><path d=\"M12 5v14M5 12h14\"/></svg><span>New</span></button>",
+      "css": ".ds-new { display: inline-flex; align-items: center; gap: 12px; height: 56px; padding: 0 24px 0 16px; border: 0; border-radius: 16px; background: #fff; color: var(--ink, #1d232b); font: 500 14px/1 Inter, system-ui, sans-serif; box-shadow: 0 1px 2px rgb(24 39 75 / .12), 0 1px 3px 1px rgb(24 39 75 / .07); cursor: pointer; transition: box-shadow .2s, background .2s; } .ds-new svg { color: var(--accent, #1b5fd1); } .ds-new:hover { background: #f8faff; box-shadow: 0 2px 6px 2px rgb(24 39 75 / .1), 0 1px 2px rgb(24 39 75 / .14); } .ds-new:focus-visible { outline: 2px solid var(--accent, #1b5fd1); outline-offset: 2px; }"
+    },
+    {
+      "name": "Search Field",
+      "kind": "input",
+      "refersTo": "search-field",
+      "description": "Top-bar search over file names and AI tags.",
+      "html": "<label class=\"ds-search\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"6.5\"/><path d=\"M16 16l4.5 4.5\"/></svg><input type=\"search\" placeholder=\"Search your files by name or AI tag\"></label>",
+      "css": ".ds-search { display: flex; align-items: center; gap: 8px; width: 420px; max-width: 100%; height: 48px; padding: 0 16px; border-radius: 999px; background: var(--tag, #e9eef6); color: var(--ink-2, #4f5965); transition: background .15s, box-shadow .15s; } .ds-search:focus-within { background: #fff; box-shadow: 0 1px 2px rgb(24 39 75 / .12), 0 1px 3px 1px rgb(24 39 75 / .07); } .ds-search input { flex: 1; min-width: 0; border: 0; background: transparent; font: 400 15px Inter, system-ui, sans-serif; color: var(--ink, #1d232b); outline: none; } .ds-search input::placeholder { color: var(--ink-2, #4f5965); }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "text-field",
+      "description": "Labelled form input on the auth card and share sheet.",
+      "html": "<input class=\"ds-field\" type=\"email\" placeholder=\"Add people by email\">",
+      "css": ".ds-field { height: 48px; padding: 0 14px; border: 1px solid var(--field, #8c95a1); border-radius: 8px; background: #fff; font: 400 14px Inter, system-ui, sans-serif; color: var(--ink, #1d232b); transition: border-color .15s, box-shadow .15s; } .ds-field:hover { border-color: var(--ink-2, #4f5965); } .ds-field:focus { outline: none; border-color: var(--accent, #1b5fd1); box-shadow: inset 0 0 0 1px var(--accent, #1b5fd1); }"
+    },
+    {
+      "name": "Navigation Item",
+      "kind": "nav",
+      "refersTo": "nav-item-active",
+      "description": "Sidebar view switcher; the current view is the blue pill.",
+      "html": "<nav class=\"ds-nav\"><a href=\"#\" aria-current=\"page\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M3 6.5A2.5 2.5 0 0 1 5.5 4h4l2 2h7A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z\"/></svg>My files</a><a href=\"#\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M3 6.5A2.5 2.5 0 0 1 5.5 4h4l2 2h7A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z\"/></svg>Shared with me</a></nav>",
+      "css": ".ds-nav { display: grid; gap: 2px; width: 232px; } .ds-nav a { display: flex; align-items: center; gap: 14px; height: 36px; padding: 0 16px 0 14px; border-radius: 999px; color: var(--ink, #1d232b); font: 500 14px/1 Inter, system-ui, sans-serif; text-decoration: none; transition: background .15s; } .ds-nav a svg { color: var(--ink-2, #4f5965); } .ds-nav a:hover { background: var(--hover, #edf1f7); } .ds-nav a[aria-current] { background: var(--accent-soft, #d8e5fb); color: var(--accent-ink, #0d3a85); font-weight: 600; } .ds-nav a[aria-current] svg { color: var(--accent-ink, #0d3a85); } .ds-nav a:focus-visible { outline: 2px solid var(--accent, #1b5fd1); outline-offset: 2px; }"
+    },
+    {
+      "name": "AI Tag Chip",
+      "kind": "chip",
+      "refersTo": "tag-chip",
+      "description": "A tag that AI added to a file; three show, the rest fold into +N.",
+      "html": "<span class=\"ds-tags\"><span class=\"ds-tag\">Beach</span><span class=\"ds-tag\">Sea</span><span class=\"ds-tag\">Sand</span><span class=\"ds-tag ds-tag-more\">+3</span></span>",
+      "css": ".ds-tags { display: inline-flex; gap: 6px; } .ds-tag { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 999px; background: var(--tag, #e9eef6); color: var(--tag-ink, #344256); font: 500 12px/1 Inter, system-ui, sans-serif; } .ds-tag-more { background: transparent; box-shadow: inset 0 0 0 1px var(--line, #e1e6ed); color: var(--ink-2, #4f5965); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Familiar Drive",
+    "overview": "SmartDrive looks and behaves like the cloud drives people already use every day, so nobody needs a tour. That familiarity is the point: an examiner should take it for a real product within seconds, and a classmate should be able to upload, find and share a file without asking how. The craft bar is Google Drive and Dropbox. Every control is standard, and the polish is in spacing, contrast and states.\n\nThe page is a cool blue-grey shell holding one white content sheet. A single blue accent marks what you can act on, the view you are in, and where keyboard focus is. The product's one differentiator, AI tagging, shows up as an ordinary column of quiet chips in the file list rather than as a spectacle. The interface is light because it is used on laptops in lit rooms.",
+    "keyCharacteristics": [
+      "Blue-grey shell, white sheet with 16px corners, one blue accent.",
+      "Inter at a 14px base with tabular numerals for sizes and dates.",
+      "Material Symbols Rounded icons; file-type icons are filled and coloured by kind.",
+      "Pill shapes for search, navigation, buttons and tags.",
+      "Shadows only on things that float."
+    ],
+    "rules": [
+      {
+        "name": "The One Blue Rule",
+        "body": "Blue only marks what is actionable, selected or focused. It is never used as decoration, never as a large field, and never in gradients.",
+        "section": "colors"
+      },
+      {
+        "name": "The Quiet Tags Rule",
+        "body": "AI tags are grey-blue chips. At most three show in a row, followed by a \"+N\" chip. Tags never take the accent colour or carry per-chip sparkles; the single sparkle lives in the column header.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Numbers Rule",
+        "body": "Sizes, dates and counts always use `font-variant-numeric: tabular-nums`, so the columns line up.",
+        "section": "typography"
+      },
+      {
+        "name": "The Shadows-Mean-Lift Rule",
+        "body": "A shadow means \"this floats\". Rows, chips and the sheet itself stay flat.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** keep every control standard: buttons, fields, tabs and popovers that people already know how to use.",
+      "**Do** use Drive Blue only for actions, the current selection, links and focus (The One Blue Rule).",
+      "**Do** show AI tags as quiet chips, at most three plus \"+N\" (The Quiet Tags Rule).",
+      "**Do** give every interactive element hover, focus-visible, busy and error states, and every list an empty state that explains what to do next.",
+      "**Do** keep text at 4.5:1 or better: use Secondary Ink for any text that can sit on a fill or a hovered row."
+    ],
+    "donts": [
+      "**Don't** add the \"AI product\" look: dark glowing themes, gradients, gradient text or neon accents. The user chose the familiar drive over novelty.",
+      "**Don't** show numbers the system doesn't have, such as a storage quota (\"of 15 GB\"), usage charts or fake activity.",
+      "**Don't** nest cards inside the content sheet or wrap files in same-size cards. Files are rows.",
+      "**Don't** use emoji or Unicode glyphs as icons; use Material Symbols Rounded or authored SVG.",
+      "**Don't** add shadows to flat things such as rows, chips or the sheet."
+    ]
+  }
+}

@@ -48,12 +48,15 @@ flowchart LR
 app/
   app.py             Flask app: auth, upload/download, sharing, search
   ai.py              AI auto-tagging (Rekognition / Comprehend)
-  templates/         HTML pages
+  templates/         HTML pages (sign in, create account, file list)
+  static/            style.css and app.js (upload, drag-and-drop, share panel)
   test_app.py        tests (run without AWS)
   requirements.txt
 terraform/main.tf    ALL infrastructure: VPC, subnet, S3, IAM, EC2
 jenkins/Dockerfile   Jenkins image with Python, SSH and Terraform installed
 Jenkinsfile          the CI/CD pipeline
+PRODUCT.md           who SmartDrive is for and what it does (product facts)
+DESIGN.md            the visual design system: colours, type, components, rules
 ```
 
 ## One-time setup
@@ -125,7 +128,7 @@ After the merge, Jenkins notices the new commit within a minute, then tests, dep
 3. Search for a tag (e.g. `dog`) to show smart search.
 4. Register **user B**, share a file with B from A's account, and show it under **Shared with me** for B.
 5. Click **Get public link** and open it in an incognito window. Turn it off and show that the link stops working.
-6. **Live CI/CD:** change the heading in `app/templates/base.html`, commit and push. Show Jenkins starting by itself and all four stages going green, then refresh the site.
+6. **Live CI/CD:** change the "Sign in" heading in `app/templates/login.html`, commit and push. Show Jenkins starting by itself and all four stages going green, then refresh the site.
 7. In the AWS console, show the VPC, the subnet, the S3 endpoint, the EC2 instance and the S3 bucket (Block all public access: On, plus the `db/*.json` files).
 
 ## Cost: why this is $0

@@ -1,12 +1,31 @@
 {% extends "base.html" %}
-{% block content %}
-<article class="auth">
-  <h2>Create an account</h2>
-  <form method="post">
-    <input type="email" name="email" placeholder="Email" required autofocus>
-    <input type="password" name="password" placeholder="Password (at least 6 characters)" minlength="6" required>
-    <button type="submit">Sign up</button>
-  </form>
-  <p>Already have an account? <a href="{{ url_for('login') }}">Log in</a></p>
-</article>
+{% from "_ui.html" import brand, icon %}
+{% block title %}Create account{% endblock %}
+{% block body %}
+<main class="auth">
+  <div class="auth-card">
+    {{ brand() }}
+    <h1>Create your account</h1>
+    <p class="lede">to start using SmartDrive</p>
+    {% for message in get_flashed_messages() %}
+      <p class="form-error" role="alert">{{ icon("error") }}<span>{{ message }}</span></p>
+    {% endfor %}
+    <form method="post" data-busy="Creating account…">
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" name="email" value="{{ email or '' }}" autocomplete="email" required autofocus>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" name="password" minlength="6" autocomplete="new-password" required aria-describedby="password-hint">
+        <span class="hint" id="password-hint">At least 6 characters</span>
+      </div>
+      <div class="auth-actions">
+        <a class="btn text" href="{{ url_for('login') }}">Sign in instead</a>
+        <button class="btn primary" type="submit">Create account</button>
+      </div>
+    </form>
+  </div>
+  <p class="auth-note">{{ icon("lock") }}Your files stay private until you share them.</p>
+</main>
 {% endblock %}

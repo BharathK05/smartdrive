@@ -1,70 +1,212 @@
 {% extends "base.html" %}
+{% from "_ui.html" import brand, icon, type_icon %}
 
-{% macro tags(f) %}
-  {% for t in f.tags %}<span class="tag">{{ t }}</span>{% else %}<small class="file-meta">No AI tags</small>{% endfor %}
+{% macro share_panel(f) %}
+{%- set link = url_for('public_download', token=f.public_token, _external=True) if f.public_token -%}
+<div id="share-{{ f.id }}" class="sheet" popover role="dialog" aria-labelledby="share-title-{{ f.id }}">
+  <h2 id="share-title-{{ f.id }}">Share “{{ f.name }}”</h2>
+
+  <form class="share-add" action="{{ url_for('share', file_id=f.id) }}" method="post">
+    <label class="visually-hidden" for="share-email-{{ f.id }}">Email of a SmartDrive user</label>
+    <input id="share-email-{{ f.id }}" type="email" name="email" placeholder="Add people by email" required>
+    <button class="btn primary" type="submit">Share</button>
+  </form>
+
+  <h3>People with access</h3>
+  <ul class="people">
+    <li>
+      <span class="avatar sm" aria-hidden="true">{{ session.email[0]|upper }}</span>
+      <span class="who">{{ session.email }} (you)</span>
+      <span class="role">Owner</span>
+    </li>
+    {% for person in f.shared_with %}
+    <li>
+      <span class="avatar sm other" aria-hidden="true">{{ person[0]|upper }}</span>
+      <span class="who">{{ person }}</span>
+      <span class="role">Can download</span>
+    </li>
+    {% endfor %}
+  </ul>
+
+  <h3>General access</h3>
+  <div class="access">
+    {% if f.public_token %}
+      <span class="access-icon public">{{ icon("public") }}</span>
+      <div><strong>Anyone with the link</strong><p>No sign-in needed to download</p></div>
+    {% else %}
+      <span class="access-icon">{{ icon("lock") }}</span>
+      <div><strong>Restricted</strong><p>Only people with access can open this file</p></div>
+    {% endif %}
+    <form action="{{ url_for('toggle_link', file_id=f.id) }}" method="post">
+      <button class="btn text" type="submit">{{ "Turn off link" if f.public_token else "Create link" }}</button>
+    </form>
+  </div>
+  {% if f.public_token %}
+  <div class="link-row">
+    <input id="link-{{ f.id }}" type="text" value="{{ link }}" readonly aria-label="Public link">
+    <button class="btn" type="button" data-copy="link-{{ f.id }}">{{ icon("content_copy") }}Copy link</button>
+  </div>
+  {% endif %}
+
+  <div class="sheet-foot">
+    <button class="btn primary" type="button" popovertarget="share-{{ f.id }}" popovertargetaction="hide">Done</button>
+  </div>
+</div>
 {% endmacro %}
 
-{% block content %}
-<article>
-  <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data">
-    <fieldset role="group">
-      <input type="file" name="file" required>
-      <button type="submit">Upload</button>
-    </fieldset>
-    <small>Up to 10 MB. Photos (.jpg, .png) and documents (.pdf, .txt) get AI tags automatically.</small>
-  </form>
-</article>
+{% block title %}{{ "Shared with me" if view == "shared" else "My files" }}{% endblock %}
 
-<form method="get" role="search">
-  <input type="search" name="q" value="{{ q }}" placeholder="Search by name or AI tag, e.g. dog or invoice">
-  <button type="submit">Search</button>
-</form>
-{% if q %}<p><a href="{{ url_for('index') }}">Clear search</a></p>{% endif %}
+{% block body %}
+{%- set shared_view = view == "shared" -%}
+{%- set view_name = "Shared with me" if shared_view else "My files" -%}
+{%- set home = url_for('index', view='shared') if shared_view else url_for('index') -%}
+<div class="app">
+  <aside class="sidebar">
+    {{ brand() }}
+    <input class="visually-hidden" id="file-input" type="file" name="file" form="upload-form">
+    <label class="new-btn" for="file-input">{{ icon("add") }}<span>New</span></label>
+    <nav class="nav" aria-label="Files">
+      <a href="{{ url_for('index') }}" {% if not shared_view %}aria-current="page"{% endif %}>{{ icon("folder", filled=not shared_view) }}My files</a>
+      <a href="{{ url_for('index', view='shared') }}" {% if shared_view %}aria-current="page"{% endif %}>{{ icon("folder_shared", filled=shared_view) }}Shared with me</a>
+    </nav>
+    <p class="storage">{{ icon("cloud") }}{{ used|filesize }} used</p>
+  </aside>
 
-<h3>My files</h3>
-{% for f in mine %}
-<article>
-  <header>
-    <a href="{{ url_for('download', file_id=f.id) }}"><strong>{{ f.name }}</strong></a>
-    <span class="file-meta">· {{ f.size|filesize }} · {{ f.uploaded[:10] }}</span>
-  </header>
-  {{ tags(f) }}
-  {% if f.shared_with %}<p class="file-meta">Shared with: {{ f.shared_with|join(', ') }}</p>{% endif %}
-  {% if f.public_token %}
-    {% set link = url_for('public_download', token=f.public_token, _external=True) %}
-    <p class="file-meta">Public link: <a href="{{ link }}">{{ link }}</a></p>
-  {% endif %}
-  <footer>
-    <form action="{{ url_for('share', file_id=f.id) }}" method="post">
-      <fieldset role="group">
-        <input type="email" name="email" placeholder="Share with (email of a SmartDrive user)" required>
-        <button type="submit" class="secondary">Share</button>
-      </fieldset>
+  <header class="topbar">
+    <form class="search" role="search" action="{{ url_for('index') }}">
+      {{ icon("search") }}
+      {% if shared_view %}<input type="hidden" name="view" value="shared">{% endif %}
+      <input type="search" name="q" value="{{ q }}" aria-label="Search {{ view_name|lower }}"
+             placeholder="{{ 'Search shared files by name or AI tag' if shared_view else 'Search your files by name or AI tag' }}">
+      {% if q %}<a class="icon-btn" href="{{ home }}" aria-label="Clear search" title="Clear search">{{ icon("close") }}</a>{% endif %}
     </form>
-    <div class="actions">
-      <form action="{{ url_for('toggle_link', file_id=f.id) }}" method="post">
-        <button type="submit" class="outline">{{ "Remove public link" if f.public_token else "Get public link" }}</button>
-      </form>
-      <form action="{{ url_for('delete', file_id=f.id) }}" method="post" onsubmit="return confirm('Delete this file?')">
-        <button type="submit" class="outline contrast">Delete</button>
-      </form>
+    <div class="user">
+      <span class="avatar" aria-hidden="true">{{ session.email[0]|upper }}</span>
+      <span class="user-email">{{ session.email }}</span>
+      <a class="icon-btn" href="{{ url_for('logout') }}" aria-label="Log out" title="Log out">{{ icon("logout") }}</a>
     </div>
-  </footer>
-</article>
-{% else %}
-<p>No files{% if q %} matching "{{ q }}"{% else %} yet. Upload one above{% endif %}.</p>
-{% endfor %}
-
-<h3>Shared with me</h3>
-{% for f in shared %}
-<article>
-  <header>
-    <a href="{{ url_for('download', file_id=f.id) }}"><strong>{{ f.name }}</strong></a>
-    <span class="file-meta">· from {{ f.owner }} · {{ f.size|filesize }}</span>
   </header>
-  {{ tags(f) }}
-</article>
-{% else %}
-<p class="file-meta">Nothing has been shared with you{% if q %} matching "{{ q }}"{% endif %}.</p>
-{% endfor %}
+
+  <main class="content">
+    <div class="content-head">
+      <h1>{% if q %}Results for “{{ q }}”{% else %}{{ view_name }}{% endif %}</h1>
+      {% if files %}
+      <p class="summary">
+        {{ files|length }} file{{ "s" if files|length != 1 }}{% if not shared_view %} · {{ files|sum(attribute="size")|filesize }}{% endif %}
+      </p>
+      {% endif %}
+    </div>
+
+    {% if files %}
+    <table class="files">
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col" class="th-tags"><span class="th-ai">{{ icon("auto_awesome") }}AI tags</span></th>
+          <th scope="col" class="th-date{{ ' th-owner' if shared_view }}">{{ "Shared by" if shared_view else "Uploaded" }}</th>
+          <th scope="col" class="th-size">Size</th>
+          <th scope="col" class="th-actions"><span class="visually-hidden">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for f in files %}
+        <tr>
+          <td class="td-name">
+            <div class="name-cell">
+              {{ type_icon(f) }}
+              <div class="name-text">
+                <a href="{{ url_for('download', file_id=f.id) }}" title="Download {{ f.name }}">{{ f.name }}</a>
+                <span class="meta-mobile">{{ f.size|filesize }} · {{ f.owner if shared_view else f.uploaded|nicedate }}</span>
+              </div>
+              {% if not shared_view and f.public_token %}
+                <span class="shared-flag" title="Anyone with the link can download">{{ icon("public") }}</span>
+              {% elif not shared_view and f.shared_with %}
+                <span class="shared-flag" title="Shared with {{ f.shared_with|join(', ') }}">{{ icon("group") }}</span>
+              {% endif %}
+            </div>
+          </td>
+          <td class="td-tags">
+            {% if f.tags %}
+            <div class="tags">
+              {% for t in f.tags[:3] %}<span class="tag">{{ t }}</span>{% endfor %}
+              {% if f.tags|length > 3 %}<span class="tag more" title="{{ f.tags[3:]|join(', ') }}">+{{ f.tags|length - 3 }}</span>{% endif %}
+            </div>
+            {% else %}
+            <span class="no-tags">No tags</span>
+            {% endif %}
+          </td>
+          <td class="td-date num"{% if shared_view %} title="{{ f.owner }}"{% endif %}>{{ f.owner if shared_view else f.uploaded|nicedate }}</td>
+          <td class="td-size num">{{ f.size|filesize }}</td>
+          <td class="td-actions">
+            <div class="actions">
+              {% if not shared_view %}
+              <button class="icon-btn" type="button" popovertarget="share-{{ f.id }}" aria-label="Share {{ f.name }}" title="Share">{{ icon("person_add") }}</button>
+              {% endif %}
+              <a class="icon-btn" href="{{ url_for('download', file_id=f.id) }}" aria-label="Download {{ f.name }}" title="Download">{{ icon("download") }}</a>
+              {% if not shared_view %}
+              <form action="{{ url_for('delete', file_id=f.id) }}" method="post" data-confirm="Delete “{{ f.name }}”? This can’t be undone.">
+                <button class="icon-btn danger" type="submit" aria-label="Delete {{ f.name }}" title="Delete">{{ icon("delete") }}</button>
+              </form>
+              {% endif %}
+            </div>
+            {% if not shared_view %}{{ share_panel(f) }}{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% elif q %}
+    <div class="empty">
+      <div class="empty-art">{{ icon("search") }}</div>
+      <h2>No files match “{{ q }}”</h2>
+      <p>Search looks at file names and the tags AI added to your photos and documents.</p>
+      <a class="btn" href="{{ home }}">Clear search</a>
+    </div>
+
+    {% elif shared_view %}
+    <div class="empty">
+      <div class="empty-art">{{ icon("folder_shared") }}</div>
+      <h2>Nothing shared with you yet</h2>
+      <p>When someone shares a file with {{ session.email }}, it shows up here.</p>
+    </div>
+
+    {% else %}
+    <div class="empty">
+      <div class="empty-art">{{ icon("upload_file") }}</div>
+      <h2>Drop files here</h2>
+      <p>Or use the New button. Photos and documents get tagged by AI, so you can search for what’s inside them.</p>
+      <label class="btn primary" for="file-input">{{ icon("upload_file") }}Upload a file</label>
+    </div>
+    {% endif %}
+  </main>
+</div>
+
+<form id="upload-form" action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data"></form>
+
+<div class="drop-overlay" id="drop-overlay" hidden>
+  <div class="drop-msg">{{ icon("upload_file") }}Drop to upload to My files</div>
+</div>
+
+<div class="upload-panel" id="upload-panel" role="status" aria-live="polite" hidden>
+  <div class="up-head">Uploading 1 file</div>
+  <div class="up-row">
+    {{ icon("upload_file") }}
+    <div>
+      <div class="up-name" id="upload-name"></div>
+      <div class="up-sub" id="upload-sub">Uploading…</div>
+      <div class="bar"><span></span></div>
+    </div>
+  </div>
+</div>
+
+<div class="toasts">
+  {% for kind, message in get_flashed_messages(with_categories=true) %}
+  <div class="toast {{ kind }}" role="{{ 'alert' if kind == 'error' else 'status' }}">
+    {% if kind == "error" %}{{ icon("error") }}{% endif %}
+    <span>{{ message }}</span>
+    <button class="icon-btn" type="button" aria-label="Dismiss">{{ icon("close") }}</button>
+  </div>
+  {% endfor %}
+</div>
 {% endblock %}

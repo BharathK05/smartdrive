@@ -1,12 +1,30 @@
 {% extends "base.html" %}
-{% block content %}
-<article class="auth">
-  <h2>Log in</h2>
-  <form method="post">
-    <input type="email" name="email" placeholder="Email" required autofocus>
-    <input type="password" name="password" placeholder="Password" required>
-    <button type="submit">Log in</button>
-  </form>
-  <p>New here? <a href="{{ url_for('register') }}">Create an account</a></p>
-</article>
+{% from "_ui.html" import brand, icon %}
+{% block title %}Sign in{% endblock %}
+{% block body %}
+<main class="auth">
+  <div class="auth-card">
+    {{ brand() }}
+    <h1>Sign in</h1>
+    <p class="lede">to continue to SmartDrive</p>
+    {% for message in get_flashed_messages() %}
+      <p class="form-error" role="alert">{{ icon("error") }}<span>{{ message }}</span></p>
+    {% endfor %}
+    <form method="post" data-busy="Signing in…">
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" name="email" value="{{ email or '' }}" autocomplete="email" required {{ 'autofocus' if not email }}>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" name="password" autocomplete="current-password" required {{ 'autofocus' if email }}>
+      </div>
+      <div class="auth-actions">
+        <a class="btn text" href="{{ url_for('register') }}">Create account</a>
+        <button class="btn primary" type="submit">Sign in</button>
+      </div>
+    </form>
+  </div>
+  <p class="auth-note">{{ icon("lock") }}Your files stay private until you share them.</p>
+</main>
 {% endblock %}

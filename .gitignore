@@ -13,3 +13,7 @@ deploy_key
 venv/
 __pycache__/
 .pytest_cache/
+
+# Local design-review screenshots
+.impeccable/review/
+.playwright-mcp/

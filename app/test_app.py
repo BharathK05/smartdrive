@@ -73,7 +73,8 @@ def test_share_with_another_user(client):
     client.get("/logout")
 
     login(client, "b@test.com")
-    assert b"dog.jpg" in client.get("/").data
+    assert b"dog.jpg" not in client.get("/").data  # not in B's own files...
+    assert b"dog.jpg" in client.get("/?view=shared").data  # ...but in "Shared with me"
     assert client.get(f"/download/{file_id}").data == b"fake image"
 
 
