@@ -1,0 +1,6 @@
+# Always store and check out files with LF line endings.
+# Windows CRLF endings would break the shell scripts that run on Linux (Jenkins and EC2).
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.pdf binary

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% macro tags(f) %}
+  {% for t in f.tags %}<span class="tag">{{ t }}</span>{% else %}<small class="file-meta">No AI tags</small>{% endfor %}
+{% endmacro %}
+
+{% block content %}
+<article>
+  <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data">
+    <fieldset role="group">
+      <input type="file" name="file" required>
+      <button type="submit">Upload</button>
+    </fieldset>
+    <small>Up to 10 MB. Photos (.jpg, .png) and documents (.pdf, .txt) get AI tags automatically.</small>
+  </form>
+</article>
+
+<form method="get" role="search">
+  <input type="search" name="q" value="{{ q }}" placeholder="Search by name or AI tag, e.g. dog or invoice">
+  <button type="submit">Search</button>
+</form>
+{% if q %}<p><a href="{{ url_for('index') }}">Clear search</a></p>{% endif %}
+
+<h3>My files</h3>
+{% for f in mine %}
+<article>
+  <header>
+    <a href="{{ url_for('download', file_id=f.id) }}"><strong>{{ f.name }}</strong></a>
+    <span class="file-meta">· {{ f.size|filesize }} · {{ f.uploaded[:10] }}</span>
+  </header>
+  {{ tags(f) }}
+  {% if f.shared_with %}<p class="file-meta">Shared with: {{ f.shared_with|join(', ') }}</p>{% endif %}
+  {% if f.public_token %}
+    {% set link = url_for('public_download', token=f.public_token, _external=True) %}
+    <p class="file-meta">Public link: <a href="{{ link }}">{{ link }}</a></p>
+  {% endif %}
+  <footer>
+    <form action="{{ url_for('share', file_id=f.id) }}" method="post">
+      <fieldset role="group">
+        <input type="email" name="email" placeholder="Share with (email of a SmartDrive user)" required>
+        <button type="submit" class="secondary">Share</button>
+      </fieldset>
+    </form>
+    <div class="actions">
+      <form action="{{ url_for('toggle_link', file_id=f.id) }}" method="post">
+        <button type="submit" class="outline">{{ "Remove public link" if f.public_token else "Get public link" }}</button>
+      </form>
+      <form action="{{ url_for('delete', file_id=f.id) }}" method="post" onsubmit="return confirm('Delete this file?')">
+        <button type="submit" class="outline contrast">Delete</button>
+      </form>
+    </div>
+  </footer>
+</article>
+{% else %}
+<p>No files{% if q %} matching "{{ q }}"{% else %} yet. Upload one above{% endif %}.</p>
+{% endfor %}
+
+<h3>Shared with me</h3>
+{% for f in shared %}
+<article>
+  <header>
+    <a href="{{ url_for('download', file_id=f.id) }}"><strong>{{ f.name }}</strong></a>
+    <span class="file-meta">· from {{ f.owner }} · {{ f.size|filesize }}</span>
+  </header>
+  {{ tags(f) }}
+</article>
+{% else %}
+<p class="file-meta">Nothing has been shared with you{% if q %} matching "{{ q }}"{% endif %}.</p>
+{% endfor %}
+{% endblock %}

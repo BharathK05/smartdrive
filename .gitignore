@@ -1,0 +1,15 @@
+# Terraform state and providers (state lives in the Jenkins workspace, never in git)
+.terraform/
+*.tfstate
+*.tfstate.*
+
+# Secrets
+deploy_key
+*.pem
+.env
+
+# Python
+.venv/
+venv/
+__pycache__/
+.pytest_cache/
